@@ -1,24 +1,57 @@
 # Glman
 
-TODO: Write a gem description
+GitLab bash manager
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'glman'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install glman
 
 ## Usage
 
-TODO: Write usage instructions here
+### Configuration
+
+setup
+
+    $ glman config <gitlab_url> <private_token> --init
+
+show
+
+    $ glman config
+
+### Aliases
+
+create 
+
+    $ glman alias <user_email> <alias>
+
+clear all aliases
+
+    $ glman alias --clear
+
+### User cache
+
+build cache
+
+    $ glman cache
+
+clear cache
+
+    $ glman cache --clear
+
+### Merge requests
+
+make default: (make merge request from current branch to master with last commit message)
+
+    $ glman mr <user_email_or_alias>
+
+make full syntax
+
+    $ glman mr <user_email_or_alias> <message> <target_branch>
+
+show merge requests
+
+    $ glman mr --show
+
 
 ## Contributing
 
