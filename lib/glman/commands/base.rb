@@ -15,7 +15,7 @@ module Glman
         p 'You realy want to create merge request master to master ?' if current_branch == 'master'
         target_branch   = params[2] || 'master'
         user_id         = get_user_id(user_name)
-        message         = params[1] || git_repo.last_commit_message
+        message         = params[1] || git_repo.last_commit_message || current_branch.split('_').join(' ')
         repository_name = git_repo.repository_name
 
         params = {assignee_id: user_id, title: message, source_branch: current_branch, target_branch: target_branch}
