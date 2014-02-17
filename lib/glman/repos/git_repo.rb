@@ -24,6 +24,13 @@ module Glman
       rescue
         nil
       end
+
+      def push(origin, branch)
+        cmd = "git push #{origin} #{branch}"
+        %x[#{cmd}]
+      rescue
+        nil
+      end
     end
   end
 end

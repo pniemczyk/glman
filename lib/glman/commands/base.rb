@@ -15,13 +15,23 @@ module Glman
         p 'You realy want to create merge request master to master ?' if current_branch == 'master'
         target_branch   = params[2] || 'master'
         user_id         = get_user_id(user_name)
-        message         = params[1] || git_repo.last_commit_message || current_branch.split('_').join(' ')
+        message         = params[1] || git_repo.last_commit_message || current_branch
         repository_name = git_repo.repository_name
 
         params = {assignee_id: user_id, title: message, source_branch: current_branch, target_branch: target_branch}
 
+        push_branch_first(push, current_branch) if push?
+
         projects_repo.create_merge_request(repository_name, params)
         ap params.merge({user_name: user_name, repository_name: repository_name})
+      end
+
+      def push=(origin=nil)
+        @origin = origin || 'origin'
+      end
+
+      def push?
+        @origin
       end
 
       def show=(bool)
@@ -107,6 +117,13 @@ module Glman
         end
       end
       private
+
+      attr_reader :origin
+
+      def push_branch_first(origin, branch)
+        p "push branch: #{branch} to origin: #{origin}"
+        git_repo.push(origin, branch)
+      end
 
       def show_all_mrs
         ap projects_repo.get_merge_requests(git_repo.repository_name)
