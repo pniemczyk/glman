@@ -46,7 +46,7 @@ make default: (make merge request from current branch to master with last commit
 
 make with git push <origin> current_branch
 
-    $ glman mr <user_email_or_alias> --push <origin(default 'origin')>
+    $ glman mr <user_email_or_alias> --push <origin (default 'origin')>
 
 make full syntax
 

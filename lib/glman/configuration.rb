@@ -13,6 +13,10 @@ module Glman
       File.write(config_file, config.to_yaml)
     end
 
+    def show_aliases
+      load[:aliases]
+    end
+
     def add_user_alias(opts={})
       config  = load
       aliases = config[:aliases] || {}

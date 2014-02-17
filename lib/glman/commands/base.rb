@@ -20,7 +20,7 @@ module Glman
 
         params = {assignee_id: user_id, title: message, source_branch: current_branch, target_branch: target_branch}
 
-        push_branch_first(push, current_branch) if push?
+        push_branch_first(origin, current_branch) unless origin.nil?
 
         projects_repo.create_merge_request(repository_name, params)
         ap params.merge({user_name: user_name, repository_name: repository_name})
@@ -28,10 +28,6 @@ module Glman
 
       def push=(origin=nil)
         @origin = origin || 'origin'
-      end
-
-      def push?
-        @origin
       end
 
       def show=(bool)
@@ -61,7 +57,7 @@ module Glman
         if clear?
           configuration.clear_user_aliases
         else
-          configuration.add_user_alias(email: params[0], alias: params[1])
+          params.empty? ? show_aliases : configuration.add_user_alias(email: params[0], alias: params[1])
         end
         config
       end
@@ -99,14 +95,16 @@ module Glman
       end
 
       # Show help
-      def help?
-        puts 'help me :D'
+      def help!
+        puts 'Need help :D'
+        puts help_page
         exit
       end
-      alias :h? :help?
+      alias :h! :help!
 
       #Exec
       def call(name=nil, *params)
+        intro
         case name.to_s.strip
           when 'config' then config(params)
           when 'alias'  then user_alias(params)
@@ -117,12 +115,11 @@ module Glman
         end
       end
       private
-
       attr_reader :origin
 
       def push_branch_first(origin, branch)
-        p "push branch: #{branch} to origin: #{origin}"
-        git_repo.push(origin, branch)
+        p "push branch: #{branch} to origin: origin"
+        git_repo.push('origin', branch)
       end
 
       def show_all_mrs
@@ -147,6 +144,32 @@ module Glman
 
       def git_repo
         @git_repo ||= Repos::GitRepo.new
+      end
+
+      def help_page
+        %{
+          commands:
+
+          config                                      # display current configuration
+          config <gitlab_url> <private_token> --init  # init configuration
+
+          alias                                       # display aliases
+          alias <user_email> <alias>                  # make alias for user email
+          alias --clear                               # clear all aliases
+
+          cache                                       # build user cache for better performance RECOMMENDED
+          cache --clear                               # clear user cache
+
+          mr <user_email_or_alias>                    # create merge request for user for current branch to master with title as last commit message
+
+          mr <user_email_or_alias> <message> <target_branch> --push <origin> # full options for merge request (default origin is a origin :D)
+
+          Any questions pniemczyk@o2.pl or go to https://github.com/pniemczyk/glman
+        }
+      end
+
+      def intro
+        puts "Glman ver: #{VERSION}"
       end
     end
   end
