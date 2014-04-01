@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "active_support"
   spec.add_dependency "awesome_print"
   spec.add_dependency "hashie"
+  spec.add_dependency "irc-notify"
   end

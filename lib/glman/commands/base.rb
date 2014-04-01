@@ -1,6 +1,7 @@
 require "glman/version"
 require 'executable'
 require 'awesome_print'
+require "irc-notify"
 
 module Glman
   module Commands
@@ -9,44 +10,18 @@ module Glman
 
       # merge_request  user_name/email message target_branch
       def mr(params)
-        return show_all_mrs if show?
-        user_name       = params[0]
-        current_branch  = git_repo.current_branch
-
-        if current_branch == 'master'
-          p 'Merge request from master to master is not so good idea!'
-          return
-        end
-
-        target_branch   = params[2] || 'master'
-        user_id         = get_user_id(user_name)
-        message         = params[1] || git_repo.last_commit_message || current_branch
-        repository_name = git_repo.repository_name
-
-        params = {assignee_id: user_id, title: message, source_branch: current_branch, target_branch: target_branch}
+        return ap mr_command.get_all if show?
+        user_name      = params[0]
+        user_id        = get_user_id(user_name)
+        target_branch  = params[2] || 'master'
+        current_branch = git_repo.current_branch
+        msg            = params[1] || git_repo.last_commit_message || current_branch
 
         push_branch_first(origin, current_branch) unless origin.nil?
 
-        opts = projects_repo.create_merge_request(repository_name, params)
-        assignee = opts['assignee'] || {}
-        author    = opts['author'] || {}
-        info = {
-          url: "#{configuration.load[:gitlab_url]}/resfinity/resfinity_profile/merge_requests/#{opts['iid']}",
-          assignee: {
-            username: assignee['username'],
-            email:    assignee['email'],
-            name:     assignee['name']
-          },
-          author: {
-            username: author['username'],
-            email:    author['email'],
-            name:     author['name']
-          },
-          id:         opts['id'],
-          iid:        opts['iid'],
-          created_at: assignee['created_at']
-        }
-        ap params.merge({repository_name: repository_name}.merge(info))
+        ap mr_command.create(user_id: user_id, msg: msg, target_branch: target_branch)
+      rescue IncorrectMrOptionsError => e
+        p e.message
       end
 
       def push=(origin=nil)
@@ -105,7 +80,6 @@ module Glman
       def clear?
         @clear
       end
-
 
       #initialize configutation  | cmd  glman config [gitlab_url] [private_token] --init
       def init=(bool)
@@ -169,21 +143,43 @@ module Glman
         @git_repo ||= Repos::GitRepo.new
       end
 
+      def mr_command
+        @mr_command ||= Mr.new(git_repo: git_repo, projects_repo: projects_repo, config: configuration.load)
+      end
+
+      def notify(msg)
+        nick = configuration.load[:irc][:nick] || "glman-#{git_repo.user_name.strip.downcase.gsub(' ','-')}"
+        irc_client.register(nick)
+        irc_client.notify(configuration.load[:irc][:channel], msg)
+        client.quit
+      end
+
+      def irc_client
+        @irc_client ||= (
+          irc_config = configuration.load[:irc]
+          server = irc_config[:server] || "irc.freenode.net"
+          port   = (irc_config[:port] || 6697).to_i
+          ssl    = irc_config[:ssl] == true ? true : false
+          IrcNotify::Client.build(server, port, ssl: ssl)
+        )
+      end
+
       def help_page
         %{
 commands:
 
-config                                      # display current configuration
-config <gitlab_url> <private_token> --init  # init configuration
+config                                         # display current configuration
+config <gitlab_url> <private_token> --init     # init configuration
+notify_config <server:port> <channel> <is_ssl> # setup irc configuration for notifications
 
-alias                                       # display aliases
-alias <user_email> <alias>                  # make alias for user email
-alias --clear                               # clear all aliases
+alias                                          # display aliases
+alias <user_email> <alias>                     # make alias for user email
+alias --clear                                  # clear all aliases
 
-cache                                       # build user cache for better performance RECOMMENDED
-cache --clear                               # clear user cache
+cache                                          # build user cache for better performance RECOMMENDED
+cache --clear                                  # clear user cache
 
-mr <user_email_or_alias>                    # create merge request for user for current branch to master with title as last commit message
+mr <user_email_or_alias>                       # create merge request for user for current branch to master with title as last commit message
 
 mr <user_email_or_alias> <message> <target_branch> --push <origin> # full options for merge request (default origin is a origin :D)
 

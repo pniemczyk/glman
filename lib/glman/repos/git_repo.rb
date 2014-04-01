@@ -25,6 +25,14 @@ module Glman
         nil
       end
 
+      def user_name
+        %x[git config user.name]
+      end
+
+      def user_email
+        %x[git config user.email]
+      end
+
       def push(origin, branch)
         cmd = "git push #{origin} #{branch}"
         %x[#{cmd}]
