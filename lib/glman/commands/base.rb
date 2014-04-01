@@ -27,8 +27,26 @@ module Glman
 
         push_branch_first(origin, current_branch) unless origin.nil?
 
-        projects_repo.create_merge_request(repository_name, params)
-        ap params.merge({user_name: user_name, repository_name: repository_name})
+        opts = projects_repo.create_merge_request(repository_name, params)
+        assignee = opts['assignee'] || {}
+        author    = opts['author'] || {}
+        info = {
+          url: "#{configuration.load[:gitlab_url]}/resfinity/resfinity_profile/merge_requests/#{opts['iid']}",
+          assignee: {
+            username: assignee['username'],
+            email:    assignee['email'],
+            name:     assignee['name']
+          },
+          author: {
+            username: author['username'],
+            email:    author['email'],
+            name:     author['name']
+          },
+          id:         opts['id'],
+          iid:        opts['iid'],
+          created_at: assignee['created_at']
+        }
+        ap params.merge({repository_name: repository_name}.merge(info))
       end
 
       def push=(origin=nil)

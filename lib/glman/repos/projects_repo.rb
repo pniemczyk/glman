@@ -46,7 +46,7 @@ module Glman
       def create_merge_request(id, opts={})
         merge_request_params_validate(opts)
         #source_branch, target_branch, assignee_id, title
-        client.post(url(id: id, path: 'merge_requests'), opts)
+        JSON.parse(client.post(url(id: id, path: 'merge_requests'), opts).body)
       end
 
       def find(opts={})
