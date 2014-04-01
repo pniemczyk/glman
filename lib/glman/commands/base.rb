@@ -12,7 +12,12 @@ module Glman
         return show_all_mrs if show?
         user_name       = params[0]
         current_branch  = git_repo.current_branch
-        p 'You realy want to create merge request master to master ?' if current_branch == 'master'
+
+        if current_branch == 'master'
+          p 'Merge request from master to master is not so good idea!'
+          return
+        end
+
         target_branch   = params[2] || 'master'
         user_id         = get_user_id(user_name)
         message         = params[1] || git_repo.last_commit_message || current_branch
