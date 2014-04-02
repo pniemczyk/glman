@@ -81,6 +81,7 @@ module Glman
         @clear
       end
 
+
       #initialize configutation  | cmd  glman config [gitlab_url] [private_token] --init
       def init=(bool)
         @init = bool

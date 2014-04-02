@@ -42,12 +42,14 @@ module Glman
       def prepare_details(create_result)
         assignee  = create_result.fetch('assignee', {})
         author    = create_result.fetch('author', {})
+        url       = "#{gitlab_url}/#{repository_name}/merge_requests/#{create_result['iid']}"
         {
           repository_name: repository_name,
           current_branch:  current_branch,
           target_branch:   create_result['target_branch'],
           message:         create_result['title'],
-          url: "#{gitlab_url}/resfinity/resfinity_profile/merge_requests/#{create_result['iid']}",
+          url:             url,
+          diff_url:        "#{url}/diffs",
           assignee: {
             username: assignee['username'],
             email:    assignee['email'],
