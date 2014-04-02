@@ -31,7 +31,7 @@ module Glman
         assignee = opts['assignee'] || {}
         author    = opts['author'] || {}
         info = {
-          url: "#{configuration.load[:gitlab_url]}/resfinity/resfinity_profile/merge_requests/#{opts['iid']}",
+          url: "#{configuration.load[:gitlab_url]}/#{repository_name}/merge_requests/#{opts['iid']}",
           assignee: {
             username: assignee['username'],
             email:    assignee['email'],
