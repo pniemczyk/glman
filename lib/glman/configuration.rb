@@ -9,7 +9,7 @@ module Glman
     end
 
     def build_config(config={})
-      validare_config(config)
+      validate_config(config)
       File.write(config_file, config.to_yaml)
     end
 
@@ -37,17 +37,40 @@ module Glman
       File.write(config_file, config.to_yaml)
     end
 
+    def set_notifications(hash)
+      validate_notofy_config(hash)
+      hash[:irc][:server] = 'irc.freenode.net' unless hash[:irc][:server]
+      hash[:irc][:nick]   = "glman-#{Time.new.to_i}" unless hash[:irc][:nick]
+      hash[:irc][:port]   = 6697 unless hash[:irc][:port]
+      hash[:irc][:ssl]    = true unless hash[:irc][:ssl]
+      update_notify_configuration(hash)
+    end
+
     private
 
-    def validare_config(hash)
+    def validate_notofy_config(hash)
+      raise ArgumentError, 'config is not hash' unless hash.kind_of?(Hash)
+      raise ArgumentError, 'irc missing in configuration' unless hash.has_key?(:irc)
+      raise ArgumentError, 'channel missing in configuration' unless hash[:irc].has_key?(:channel)
+    end
+
+    def validate_config(hash)
       raise ArgumentError, 'config is not hash' unless hash.kind_of?(Hash)
       raise ArgumentError, 'private_token missing in configuration' unless hash.has_key?(:private_token)
       raise ArgumentError, 'gitlab_url missing in configuration'    unless hash.has_key?(:gitlab_url)
     end
 
+    def update_notify_configuration(hash)
+      config     = load
+      notify_cfg = load.fetch(:notify_cfg, {})
+      notify_cfg.merge(hash)
+      config[:notify_cfg] = notify_cfg
+      File.write(config_file, config.to_yaml)
+    end
+
     def config_load
       Hashie::Mash.new(YAML.load_file(config_file)).tap do |config|
-        validare_config(config)
+        validate_config(config)
       end
     end
 
