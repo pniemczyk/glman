@@ -3,15 +3,15 @@ require "irc-notify"
 module Glman
   module Commands
     class Config
-      attr_reader
-
+      attr_reader :config_manager
       def initialize(opts={})
-        @config = opts.fetch(:config)
+        @config_manager = opts.fetch(:config_manager)
       end
 
-      def config(params=[])
-        return display_conf if params.blank?
-        display_conf(get_configuration_key(params))
+      def show_configuration(params=[])
+        get_configuration_key(params).tap do |conf|
+          dp conf.blank? ? "No configuration yet" : conf
+        end
       end
 
       def set_gitlab(gitlab_url, private_token)
@@ -19,9 +19,9 @@ module Glman
         set(gitlab: gitlab)
       end
 
-      def set_alias(email, alias)
+      def set_alias(email, _alias)
         aliases = get[:aliases] || {}
-        aliases[alias.to_sym] = email
+        aliases[_alias.to_sym] = email
         configuration.set(aliases: aliases)
       end
 
@@ -38,20 +38,13 @@ module Glman
 
       private
 
-      def display_conf(conf=configuration.get)
-        ap conf || "No configuration yet"
-      end
-
       def get_configuration_key(params)
-        conf = configuration.get
-        params.compact.each do |key|
-          conf = conf[key.to_sym] || {}
+        return config_manager.get if params.blank?
+        config_manager.get.tap do |conf|
+          params.compact.each do |key|
+            conf = conf[key.to_sym] || {}
+          end
         end
-        conf
-      end
-
-      def configuration
-        @configuration ||= Configuration.new
       end
     end
   end

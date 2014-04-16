@@ -1,3 +1,4 @@
+require "glman/kernel"
 require "glman/version"
 require "active_support/dependencies"
 
