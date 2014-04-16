@@ -3,15 +3,17 @@ require 'hashie'
 
 module Glman
   class ConfigManager
+    class SetConfigError < StandardError; end
+    class BaseConfigValidationError < StandardError; end
 
     def get
       File.exist?(config_file) ? load_configuration : {}
     end
 
     def set(hash)
-      raise ConfigurationUpdateError.new unless hash.kind_of?(Hash)
+      raise SetConfigError, 'argument is not kind of hash' unless hash.kind_of?(Hash)
       updated_config = get.merge(hash)
-      validate_config(updated_config)
+      base_config_validate(updated_config)
 
       save_configuration(updated_config)
     end
@@ -21,7 +23,7 @@ module Glman
     end
 
     def valid?
-      validate_config(get)
+      base_config_validate(get)
       true
     rescue
       false
@@ -29,12 +31,12 @@ module Glman
 
     private
 
-    def validate_config(hash)
-      raise ArgumentError, 'config is not hash' unless hash.kind_of?(Hash)
-      raise ArgumentError, 'gitlab missing in configuration' unless hash.has_key?(:gitlab)
+    def base_config_validate(hash)
+      raise BaseConfigValidationError, 'argument is not kind of hash' unless hash.kind_of?(Hash)
+      raise BaseConfigValidationError, 'gitlab key missing' unless hash.has_key?(:gitlab)
       gitlab_hash = hash[:gitlab]
-      raise ArgumentError, 'gitlab#private_token missing in configuration' unless gitlab_hash.has_key?(:private_token)
-      raise ArgumentError, 'gitlab#url missing in configuration'    unless gitlab_hash.has_key?(:url)
+      raise BaseConfigValidationError, 'gitlab#private_token key missing' unless gitlab_hash.has_key?(:private_token)
+      raise BaseConfigValidationError, 'gitlab#url key missing'    unless gitlab_hash.has_key?(:url)
     end
 
     def save_configuration(config)
