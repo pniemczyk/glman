@@ -1,6 +1,6 @@
 require "glman/kernel"
 require "glman/version"
-require "active_support/dependencies"
+require "activesupport/dependencies"
 
 module Glman
   extend ActiveSupport::Dependencies
