@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "httpclient"
   spec.add_dependency "executable"
   spec.add_dependency "json"
-  spec.add_dependency "active_support"
+  spec.add_dependency "activesupport"
   spec.add_dependency "awesome_print"
   spec.add_dependency "hashie"
   spec.add_dependency "irc-notify"

@@ -6,7 +6,7 @@ gemspec
 gem "httpclient"
 gem "executable"
 gem "json"
-gem "active_support"
+gem "activesupport"
 gem "awesome_print"
 gem "hashie"
 gem "irc-notify"
