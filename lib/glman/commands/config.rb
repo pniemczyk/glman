@@ -3,48 +3,62 @@ require "irc-notify"
 module Glman
   module Commands
     class Config
-      attr_reader :config_manager
-      def initialize(opts={})
-        @config_manager = opts.fetch(:config_manager)
-      end
 
-      def show_configuration(params=[])
-        get_configuration_key(params).tap do |conf|
+      include InitRequired
+
+      attr_required :config_manager
+
+      def show(params=[])
+        get_configuration_by_key(params).tap do |conf|
           dp conf.blank? ? "No configuration yet" : conf
         end
       end
 
-      def set_gitlab(gitlab_url, private_token)
-        gitlab = { gitlab_url: gitlab_url, private_token: private_token }
-        set(gitlab: gitlab)
+      def set(name, hash={})
+        send("#{name}_conf").set(hash)
       end
 
-      def set_alias(email, _alias)
-        aliases = get[:aliases] || {}
-        aliases[_alias.to_sym] = email
-        configuration.set(aliases: aliases)
+      def get(name)
+        send("#{name}_conf").get
       end
 
-      def delete_alias
-
+      def clear(name)
+        send("#{name}_conf").clear
       end
 
-      def set_users
+      def add(name, params)
+        send("#{name}_conf").add(params)
       end
 
-      def clear_users
-
+      def delete(name, params)
+        send("#{name}_conf").delete(params)
       end
 
       private
 
-      def get_configuration_key(params)
+      def get_configuration_by_key(params)
         return config_manager.get if params.blank?
-        config_manager.get.tap do |conf|
-          params.compact.each do |key|
-            conf = conf[key.to_sym] || {}
-          end
-        end
+        return config_manager.get[params.to_sym] unless params.kind_of?(Array)
+
+        conf = config_manager.get
+        params.compact.each{ |key| conf = conf[key.to_sym] || {} }
+        conf
+      end
+
+      def users_conf
+        @users_conf ||= Glman::Commands::Configs::UsersConfig.new(config_manager: config_manager)
+      end
+
+      def notify_irc_conf
+        @notify_irc_conf ||= Glman::Commands::Configs::NotifyIrcConfig.new(config_manager: config_manager)
+      end
+
+      def gitlab_conf
+        @gitlab_conf ||= Glman::Commands::Configs::GitlabConfig.new(config_manager: config_manager)
+      end
+
+      def aliases_conf
+        @aliases_conf ||= Glman::Commands::Configs::AliasesConfig.new(config_manager: config_manager)
       end
     end
   end

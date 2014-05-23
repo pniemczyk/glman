@@ -36,12 +36,12 @@ module Glman
       end
 
       def gitlab_url
-        @gitlab_url ||= config[:gitlab_url]
+        @gitlab_url ||= config[:url]
       end
 
       def prepare_details(create_result)
-        assignee  = create_result.fetch('assignee', {})
-        author    = create_result.fetch('author', {})
+        assignee  = create_result.fetch('assignee', {}) || {}
+        author    = create_result.fetch('author', {})   || {}
         url       = "#{gitlab_url}/#{repository_name}/merge_requests/#{create_result['iid']}"
         {
           repository_name: repository_name,
