@@ -26,8 +26,8 @@ you can show specific config details:
   config gitlab url                    # specific attribute in gitlab config
   config users pniemczyk@o2 id         # specific attribute in users config
 
-config glman url:http://site private_token:123 --set
-config glman --clear
+config gitlab url:http://site private_token:123 --set
+config gitlab --clear
 
 config notify_irc server:irc.org channel:free ssl:true port:10 nick:test --set
 config notify_irc --clear
