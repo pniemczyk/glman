@@ -12,7 +12,7 @@ module Glman
 
         def set(users={})
           raise UsersConfigurationError.new('incorrect data') unless users.kind_of? Hash
-          hash = nil if hash.empty?
+          hash = nil if users.empty?
           config_manager.set(users: users)
         end
 

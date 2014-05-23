@@ -33,7 +33,7 @@ describe Glman::Commands::Configs::UsersConfig do
 
   describe '#clear' do
     before(:each) {config_manager.should_receive(:set).with({ users: set_users })}
-    let(:set_users) { nil }
+    let(:set_users) { Glman::Commands::Configs::UsersConfig::DEFAULT }
 
     it 'should set users to default' do
       subject.clear

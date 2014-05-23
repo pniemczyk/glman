@@ -29,8 +29,8 @@ describe Glman::Commands::Configs::AliasesConfig do
     end
 
     let(:alias_to_delete) {'pn'}
-    let(:get_aliases)     {{aliases: {dj: 'damian@o2.pl', pn: 'pawel@o2.pl'}}}
-    let(:set_aliases)     {{dj: 'damian@o2.pl'}}
+    let(:get_aliases)     {{aliases: {'dj' => 'damian@o2.pl', 'pn' => 'pawel@o2.pl'}}}
+    let(:set_aliases)     {{'dj' => 'damian@o2.pl'}}
 
     it 'should delete alias from existings' do
       subject.delete(alias_to_delete)
