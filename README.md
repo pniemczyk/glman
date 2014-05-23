@@ -12,7 +12,7 @@ GitLab bash manager
 
 setup
 
-    $ glman config <gitlab_url> <private_token> --init
+    $ glman config gitlab url:http://site private_token:123 --set
 
 show
 
@@ -20,23 +20,27 @@ show
 
 ### Aliases
 
-create 
+add
 
-    $ glman alias <user_email> <alias>
+    $ glman config aliases pn:pawel@o2.pl --add
+
+delete
+
+    $ glman config aliases pn --del
 
 clear all aliases
 
-    $ glman alias --clear
+    $ glman config aliases --clear
 
 ### User cache
 
 build cache
 
-    $ glman cache
+    $ glman cache_users
 
 clear cache
 
-    $ glman cache --clear
+    $ glman cache_users --clear
 
 ### Merge requests
 
@@ -52,9 +56,13 @@ make full syntax
 
     $ glman mr <user_email_or_alias> <message> <target_branch>
 
+make optional options (push repo, create mr and notify on irc)
+
+    $ glman mr <user_email_or_alias> --push --notify
+
 show merge requests
 
-    $ glman mr --show
+    $ glman mr
 
 
 ## Contributing

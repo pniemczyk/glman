@@ -8,7 +8,7 @@ module Glman
     class ProjectsRepo
       PER_PAGE = 10000
       def initialize(opts={})
-        @gitlab_url    = opts.fetch(:gitlab_url)
+        @gitlab_url    = opts.fetch(:url)
         @private_token = opts.fetch(:private_token)
       end
       def list

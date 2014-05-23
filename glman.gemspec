@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency "rspec"
   spec.add_development_dependency "rake"
   spec.add_dependency "httpclient"
   spec.add_dependency "executable"
@@ -28,4 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "active_support"
   spec.add_dependency "awesome_print"
   spec.add_dependency "hashie"
+  spec.add_dependency "irc-notify"
   end
