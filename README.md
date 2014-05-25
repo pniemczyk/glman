@@ -2,6 +2,8 @@
 
 GitLab bash manager
 
+## *Warning* please remove ~/.glmanrc file after upgrade from ~0.0.x version
+
 ## Installation
 
     $ gem install glman
