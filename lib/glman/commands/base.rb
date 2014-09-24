@@ -35,7 +35,7 @@ module Glman
         email = (configuration.get(:aliases) || {})[name]
         user  = (configuration.get(:users)   || {})[email] if email
         user  = users_repo.find(email: name) unless user
-        user[:id] if user
+        user[:id] || user['id'] if user
       end
 
       # Make Cache for user
